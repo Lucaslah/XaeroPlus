@@ -94,7 +94,7 @@ jobs:
         base-ref: ${{ env.MOD_LOADER }}-${{ env.MINECRAFT_VERSION }}-${{ env.PREV_RUN_NUMBER }}
 
     - name: Release
-      uses: Kir-Antipov/mc-publish@v3.3
+      uses: Kir-Antipov/mc-publish@v3.3.0
       with:
         changelog: ${{steps.changelog.outputs.changelog}}
         #curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
