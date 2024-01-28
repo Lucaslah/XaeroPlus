@@ -97,11 +97,11 @@ jobs:
       uses: Kir-Antipov/mc-publish@v3.3
       with:
         changelog: ${{steps.changelog.outputs.changelog}}
-        curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-        curseforge-id: 866084
+        #curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+        #curseforge-id: 866084
 
-        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-        modrinth-id: EnPUzSTg
+        #modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+        #modrinth-id: EnPUzSTg
 
         github-token: ${{ secrets.GITHUB_TOKEN }}
         github-files: |
