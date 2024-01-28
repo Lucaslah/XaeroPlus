@@ -9,6 +9,8 @@ import xaeroplus.settings.XaeroPlusSettingsReflectionHax.SettingLocation;
 import xaeroplus.util.BaritoneHelper;
 import xaeroplus.util.WaystonesHelper;
 
+import java.io.ByteArrayOutputStream;
+
 import static net.minecraft.world.level.Level.*;
 import static xaeroplus.settings.XaeroPlusSettingsReflectionHax.markChunksDirtyInWriteDistance;
 
@@ -41,6 +43,16 @@ public final class XaeroPlusSettingRegistry {
             "setting.world_map.fast_mapping_rate_limit.tooltip",
             25,
             SettingLocation.WORLD_MAP_MAIN);
+    public static final XaeroPlusBooleanSetting fastZipWrite = XaeroPlusBooleanSetting.create(
+        "Fast Zip Writes",
+        "setting.world_map.fast_zip_writes",
+        "setting.world_map.fast_zip_writes.tooltip",
+        (b) -> {
+            if (!b) Globals.zipFastByteBuffer = new ByteArrayOutputStream(); // release any existing sized buffer to gc
+        },
+        true,
+        SettingLocation.WORLD_MAP_MAIN
+    );
     public static final XaeroPlusBooleanSetting baritoneWaypointSyncSetting = XaeroPlusBooleanSetting.create(
             "Baritone Goal Waypoint",
             "setting.world_map.baritone_waypoint",
@@ -111,7 +123,7 @@ public final class XaeroPlusSettingRegistry {
             "setting.world_map.transparent_obsidian_roof",
             "setting.world_map.transparent_obsidian_roof.tooltip",
             (v) -> markChunksDirtyInWriteDistance(),
-            true,
+            false,
             SettingLocation.WORLD_MAP_MAIN);
     public static final XaeroPlusFloatSetting transparentObsidianRoofYSetting = XaeroPlusFloatSetting.create(
             "Roof Y Level",
@@ -131,6 +143,14 @@ public final class XaeroPlusSettingRegistry {
             (v) -> markChunksDirtyInWriteDistance(),
             150,
             SettingLocation.WORLD_MAP_MAIN);
+    public static final XaeroPlusFloatSetting transparentObsidianRoofSnowOpacitySetting = XaeroPlusFloatSetting.create(
+        "Roof Snow Opacity",
+        "setting.world_map.transparent_obsidian_roof_snow_opacity", // todo: translations
+        0, 255, 5,
+        "setting.world_map.transparent_obsidian_roof_snow_opacity.tooltip",
+        (v) -> markChunksDirtyInWriteDistance(),
+        10,
+        SettingLocation.WORLD_MAP_MAIN);
     public static final XaeroPlusFloatSetting worldMapMinZoomSetting = XaeroPlusFloatSetting.create(
             "Min WorldMap Zoom",
             "setting.world_map.min_zoom",

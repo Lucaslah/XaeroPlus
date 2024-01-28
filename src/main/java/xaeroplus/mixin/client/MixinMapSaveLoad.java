@@ -1,7 +1,5 @@
 package xaeroplus.mixin.client;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
@@ -16,8 +14,8 @@ import xaero.map.region.LeveledRegion;
 import xaero.map.region.MapRegion;
 import xaeroplus.Globals;
 import xaeroplus.XaeroPlus;
+import xaeroplus.settings.XaeroPlusSettingRegistry;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -38,18 +36,17 @@ public abstract class MixinMapSaveLoad {
         }
     }
 
-    @WrapOperation(method = "saveRegion", at = @At(
+    @Redirect(method = "saveRegion", at = @At(
         value = "NEW",
         args = "class=java/io/DataOutputStream"
     ))
-    public DataOutputStream replaceSaveRegionZipOutputStream(final OutputStream out, final Operation<DataOutputStream> original,
-                                                             @Share("byteOut") final LocalRef<ByteArrayOutputStream> byteOutRef,
+    public DataOutputStream replaceSaveRegionZipOutputStream(final OutputStream out,
                                                              @Local(name = "zipOut") final ZipOutputStream zipOut,
                                                              @Share("zipOutShare") final LocalRef<ZipOutputStream> zipOutShare) {
+        if (!XaeroPlusSettingRegistry.fastZipWrite.getValue()) return new DataOutputStream(out);
+        Globals.zipFastByteBuffer.reset();
         zipOutShare.set(zipOut);
-        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-        byteOutRef.set(byteOut);
-        return new DataOutputStream(byteOut);
+        return new DataOutputStream(Globals.zipFastByteBuffer);
     }
 
     @Inject(method = "saveRegion", at = @At(
@@ -57,9 +54,10 @@ public abstract class MixinMapSaveLoad {
         target = "Ljava/util/zip/ZipOutputStream;closeEntry()V"
     ))
     public void saveRegionWriteZipOutputStream(final MapRegion region, final int extraAttempts, final CallbackInfoReturnable<Boolean> cir,
-                                               @Share("byteOut") final LocalRef<ByteArrayOutputStream> byteOutRef,
                                                @Local(name = "zipOut") final ZipOutputStream zipOut) throws IOException {
-        byteOutRef.get().writeTo(zipOut);
+        if (!XaeroPlusSettingRegistry.fastZipWrite.getValue()) return;
+        Globals.zipFastByteBuffer.writeTo(zipOut);
+        Globals.zipFastByteBuffer.reset();
     }
 
     @Inject(method = "saveRegion", at = @At(
@@ -69,6 +67,7 @@ public abstract class MixinMapSaveLoad {
     public void closeZipOutputStream(final MapRegion region, final int extraAttempts, final CallbackInfoReturnable<Boolean> cir,
                                      @Share("zipOutShare") final LocalRef<ZipOutputStream> zipOutShare
     ) throws IOException {
+        if (!XaeroPlusSettingRegistry.fastZipWrite.getValue()) return;
         zipOutShare.get().close();
     }
 

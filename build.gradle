@@ -1,5 +1,5 @@
 plugins {
-	id 'dev.architectury.loom' version '1.4-SNAPSHOT'
+	id 'dev.architectury.loom' version '1.5-SNAPSHOT'
 	id 'maven-publish'
 	id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
@@ -29,6 +29,10 @@ repositories {
 		name = 'ParchmentMC'
 		url = 'https://maven.parchmentmc.org'
 	}
+	maven {
+		name = 'Lenni0451'
+		url = 'https://maven.lenni0451.net/releases'
+	}
 	mavenLocal()
 }
 
@@ -50,22 +54,22 @@ afterEvaluate {
 }
 
 ext {
-	worldmap_version = "1.37.6"
-	minimap_version = "23.9.6"
+	worldmap_version = "1.37.7"
+	minimap_version = "23.9.7"
 }
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings loom.layered {
 		officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.20.3:2023.12.31@zip")
+		parchment("org.parchmentmc.data:parchment-1.20.3:${project.parchment_version}@zip")
 	}
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	jarLibs 'com.github.ben-manes.caffeine:caffeine:3.1.8'
-	implementation(include "net.lenni0451:LambdaEvents:2.4.0")
-	jarLibs 'org.xerial:sqlite-jdbc:3.44.1.0'
+	implementation(include 'com.github.ben-manes.caffeine:caffeine:3.1.8')
+	implementation(include "net.lenni0451:LambdaEvents:2.4.1")
+	jarLibs 'org.xerial:sqlite-jdbc:3.45.0.0'
 
 	modImplementation "maven.modrinth:xaeros-world-map:${worldmap_version}_Fabric_1.20.4"
 	modImplementation "maven.modrinth:xaeros-minimap:${minimap_version}_Fabric_1.20.4"
@@ -131,7 +135,6 @@ shadowJar {
 	exclude 'org/sqlite/native/Windows/aarch64/**'
 	exclude 'org/sqlite/native/Windows/armv7/**'
 	exclude 'org/slf4j/**'
-	relocate "com.github.benmanes.caffeine", "xaeroplus.com.github.benmanes.caffeine.shadow"
 }
 
 remapJar {
